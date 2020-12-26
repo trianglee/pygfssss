@@ -39,39 +39,15 @@ def pickRandomPolynomial(degree, value):
   return PGF256(coeffs)
 
 
-def encodeByte(byte,n,k):
-  # Allocate array to track duplicates
-  picked = [False for i in range(0,256)]
-  
+def encodeByte(byte,n,k,picks):
   # Pick a random polynomial
-  P = pickRandomPolynomial(k-1,GF256elt(byte))
-  
+  P = pickRandomPolynomial(k-1, GF256elt(byte))
+
   # Generate the keys
   keys = [bytearray() for i in range(0,n)]
 
   for i in range(0,n):
-
-    #        
-    # Pick a not yet picked X value in [0,255],
-    # we need a value in [1,255] but to have a credible entropy for bytes we pick it in [0,255]
-    # and simply output garbage if we picked 0
-    # If we do not do that then the output keys will NEVER have 00 in even positions (starting at 0) which would be a little suspicious for some random data
-    #
-        
-    pick = random.randint(1,255)
-
-    while picked[pick] or pick == 0:
-      # 0 values will be discarded but output it anyway with trailing garbage
-      if pick == 0:
-        keys[i] += byte(0)
-        keys[i] += byte(random.randint(0,255))
-          
-      pick = random.randint(1,255)
-
-    # Keep track of the value we just picked
-    picked[pick] = True
-    
-    X = GF256elt(pick)
+    X = GF256elt(picks[i])
     Y = P.f(X)
 
     keys[i] += bytes([int(X)])
@@ -84,21 +60,40 @@ def encode(stream, outputs, k):
 
   n = len(outputs)
 
-  # Loop through the chars        
+  # Allocate array to track duplicates
+  picked = [False for i in range(0,256)]
+
+  picks = []
+
+  for i in range(0,n):
+
+    # Pick a not yet picked X value in [1,255],
+
+    while True:
+      pick = random.randint(1, 255)
+      if not picked[pick]:
+        break
+
+    # Keep track of the value we just picked
+    picked[pick] = True
+
+    picks.append(pick)
+
+  # Loop through the chars
   while True:
     data = stream.read(1)
     if 0 == len(data):
       break
     byte = data[0]
 
-    keys = encodeByte(byte,n,k)
+    keys = encodeByte(byte,n,k,picks)
 
     for i in range(0,n):
       outputs[i].write(keys[i])
 
 
 def decode(keys,output):
-  
+
   interpolator = PGF256Interpolator()
   zero = GF256elt(0)
 
@@ -155,5 +150,5 @@ if __name__ == "__main__":
     inputs[i].seek(0)
 
   output = BytesIO()
-  decode(inputs,output)  
+  decode(inputs,output)
   print (output.getvalue())
