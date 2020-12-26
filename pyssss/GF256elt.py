@@ -166,9 +166,9 @@ class GF256elt:
 #
 # For Rijndael compatibility (0x11b prime polynomial and 0x03 as generator)
 #
-GF256elt.generate_logexp_tables()
+# GF256elt.generate_logexp_tables()
 
 #
-# For buttsoft/QR Code compatibility (0x11d prime polynomial)
+# For buttsoft/QR Code/gfshare compatibility (0x11d prime polynomial)
 #
-# GF256elt.generate_pplogexp_tables(0x11d)
+GF256elt.generate_pplogexp_tables(0x11d)
