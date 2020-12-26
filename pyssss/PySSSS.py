@@ -22,16 +22,17 @@ from pyssss.GF256elt import GF256elt
 from pyssss.PGF256 import PGF256
 from pyssss.PGF256Interpolator import PGF256Interpolator
 
-def pickRandomPolynomial(degree,zero):
-  """Pick a random PGF256 polynomial P such that P(0) = zero"""
-   
+
+def pickRandomPolynomial(degree, value):
+  """Pick a random PGF256 polynomial P such that P(0) = value"""
+
   coeffs = []
-  
+
   # Set f(0)
-  coeffs.append(zero)
-  
+  coeffs.append(value)
+
   # Pick coefficients for x^n with n < degree
-  
+
   for c in range(1,degree):
     coeffs.append(GF256elt(random.randint(0,255)))
           
