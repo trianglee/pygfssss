@@ -31,15 +31,11 @@ def pickRandomPolynomial(degree, value):
   # Set f(0)
   coeffs.append(value)
 
-  # Pick coefficients for x^n with n < degree
+  # Pick coefficients for x^n with n <= degree
 
-  for c in range(1,degree):
+  for c in range(1,degree+1):
     coeffs.append(GF256elt(random.randint(0,255)))
-          
-  # Pick non null coefficient for x^degree
-  
-  coeffs.append(GF256elt(random.randint(1,255)))
-  
+
   return PGF256(coeffs)
 
 
