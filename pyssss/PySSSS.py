@@ -32,7 +32,7 @@ def pickRandomPolynomial(degree,zero):
   
   # Pick coefficients for x^n with n < degree
   
-  for c in xrange(1,degree):
+  for c in range(1,degree):
     coeffs.append(GF256elt(random.randint(0,255)))
           
   # Pick non null coefficient for x^degree
@@ -44,15 +44,15 @@ def pickRandomPolynomial(degree,zero):
 
 def encodeByte(byte,n,k):
   # Allocate array to track duplicates
-  picked = [False for i in xrange(0,256)]
+  picked = [False for i in range(0,256)]
   
   # Pick a random polynomial
   P = pickRandomPolynomial(k-1,GF256elt(byte))
   
   # Generate the keys
-  keys = ["" for i in xrange(0,n)]
-  
-  for i in xrange(0,n):
+  keys = [bytearray() for i in range(0,n)]
+
+  for i in range(0,n):
 
     #        
     # Pick a not yet picked X value in [0,255],
@@ -62,23 +62,23 @@ def encodeByte(byte,n,k):
     #
         
     pick = random.randint(1,255)
-            
+
     while picked[pick] or pick == 0:
       # 0 values will be discarded but output it anyway with trailing garbage
       if pick == 0:
-        keys[i] += chr(0)
-        keys[i] += chr(random.randint(0,255))
+        keys[i] += byte(0)
+        keys[i] += byte(random.randint(0,255))
           
       pick = random.randint(1,255)
-    
-    # Keep track of the value we just picked    
+
+    # Keep track of the value we just picked
     picked[pick] = True
     
     X = GF256elt(pick)
     Y = P.f(X)
-    
-    keys[i] += chr(int(X))
-    keys[i] += chr(int(Y))
+
+    keys[i] += bytes([int(X)])
+    keys[i] += bytes([int(Y)])
 
   return keys
 
@@ -92,11 +92,12 @@ def encode(data,outputs,k):
     if 0 == len(char):
       break
     byte = ord(char)
-    
-    charkeys = encodeByte(byte,n,k)
 
-    for i in xrange(0,n):
-      outputs[i].write(charkeys[i])
+    keys = encodeByte(byte,n,k)
+
+    for i in range(0,n):
+      outputs[i].write(keys[i])
+
 
 def decode(keys,output):
   
@@ -111,7 +112,7 @@ def decode(keys,output):
 
   while not eok:
     points = []
-    for i in xrange(0,len(keys)):
+    for i in range(0,len(keys)):
       while True:
         b = keys[i].read(1)
         if 0 == len(b):
@@ -140,29 +141,31 @@ def decode(keys,output):
 
     # Decode next byte
     byte = interpolator.interpolate(points).f(zero)
-    output.write(chr(byte))
+
+    output.write(bytes([int(byte)]))
 
 if __name__ == "__main__":
-  import StringIO
-  input = StringIO.StringIO("Too many secrets, Marty!")
+
+  from io import BytesIO
+  input = BytesIO(b"Too many secrets, Marty!")
   outputs = []
   n = 5
   k = 3
-  for i in xrange(n):
-    outputs.append(StringIO.StringIO())
+  for i in range(n):
+    outputs.append(BytesIO())
 
   encode(input,outputs,k)
 
-  for i in xrange(n):
-    print outputs[i].getvalue().encode('hex')
+  for i in range(n):
+    print (outputs[i].getvalue().hex())
 
   inputs = []
-  for i in xrange(k):
+  for i in range(k):
     inputs.append(outputs[i+1])
 
-  for i in xrange(k):
+  for i in range(k):
     inputs[i].seek(0)
 
-  output = StringIO.StringIO()
+  output = BytesIO()
   decode(inputs,output)  
-  print output.getvalue()
+  print (output.getvalue())
