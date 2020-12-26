@@ -79,16 +79,17 @@ def encodeByte(byte,n,k):
 
   return keys
 
-def encode(data,outputs,k):
-      
+
+def encode(stream, outputs, k):
+
   n = len(outputs)
 
   # Loop through the chars        
   while True:
-    char = data.read(1)
-    if 0 == len(char):
+    data = stream.read(1)
+    if 0 == len(data):
       break
-    byte = ord(char)
+    byte = data[0]
 
     keys = encodeByte(byte,n,k)
 
