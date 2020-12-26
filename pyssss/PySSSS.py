@@ -101,46 +101,36 @@ def decode(keys,output):
   
   interpolator = PGF256Interpolator()
   zero = GF256elt(0)
-  
-  data = ""
-  
 
-  # End Of Key    
-  eok = False
+  # End Of Key
+  end_of_key = False
 
-  while not eok:
+  while not end_of_key:
     points = []
     for i in range(0,len(keys)):
-      while True:
-        b = keys[i].read(1)
-        if 0 == len(b):
-          eok = True
-          break
-        # Skip points with X value of 0, they were added to respect the entropy of the output
-        X = ord(b)
-        if 0 == X:
-          keys[i].seek(keys[i].tell() + 1)
-        else:
-          break
-
-      if eok:
+      b = keys[i].read(1)
+      if 0 == len(b):
+        end_of_key = True
         break
-      
+
+      X = ord(b)
+
       # Extract X/Y
       Y = ord(keys[i].read(1))
-      
+
       # Push point
       points.append((GF256elt(X),GF256elt(Y)))
 
-    if eok:
+    if end_of_key:
       if 0 != i:
         raise Exception('Unexpected EOF while reading key %d' % i)
-      break                        
+      break
 
     # Decode next byte
     byte = interpolator.interpolate(points).f(zero)
 
     output.write(bytes([int(byte)]))
+
 
 if __name__ == "__main__":
 
