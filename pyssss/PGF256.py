@@ -15,7 +15,7 @@
 #  limitations under the License.
 #
 
-from GF256elt import GF256elt
+from pyssss.GF256elt import GF256elt
 
 class PGF256:
   """Class for representing polynomials whose coefficients are GF256elt."""

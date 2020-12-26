@@ -18,9 +18,9 @@
 
 import random
 
-from GF256elt import GF256elt
-from PGF256 import PGF256
-from PGF256Interpolator import PGF256Interpolator
+from pyssss.GF256elt import GF256elt
+from pyssss.PGF256 import PGF256
+from pyssss.PGF256Interpolator import PGF256Interpolator
 
 def pickRandomPolynomial(degree,zero):
   """Pick a random PGF256 polynomial P such that P(0) = zero"""
