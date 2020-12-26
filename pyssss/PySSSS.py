@@ -133,8 +133,7 @@ def decode(keys, output):
         output.write(bytes([int(byte)]))
 
 
-if __name__ == "__main__":
-
+def main():
     from io import BytesIO
 
     input = BytesIO(b"Too many secrets, Marty!")
@@ -159,3 +158,7 @@ if __name__ == "__main__":
     output = BytesIO()
     decode(inputs, output)
     print(output.getvalue())
+
+
+if __name__ == "__main__":
+    main()
