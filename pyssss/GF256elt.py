@@ -97,22 +97,22 @@ class GF256elt:
         return self.__bytevalue == other.__bytevalue
 
     @staticmethod
-    def generate_pplogexp_tables(PP):
+    def generate_pplogexp_tables(prime_poly):
         """Generate logarithm and exponential tables for Gf(256) with a prime
-       polynomial whose value is 'PP'."""
+       polynomial whose value is 'prime_poly'."""
 
-        GF = 256
+        gf_order = 256
 
-        GF256elt.__logtable = [0 for i in range(GF)]
-        GF256elt.__exptable = [0 for i in range(GF)]
+        GF256elt.__logtable = [0] * gf_order
+        GF256elt.__exptable = [0] * gf_order
 
-        GF256elt.__logtable[0] = (1 - GF) & 0xff
+        GF256elt.__logtable[0] = (1 - gf_order) & 0xff
         GF256elt.__exptable[0] = 1
 
-        for i in range(1, GF):
+        for i in range(1, gf_order):
             GF256elt.__exptable[i] = GF256elt.__exptable[i - 1] * 2
-            if GF256elt.__exptable[i] >= GF:
-                GF256elt.__exptable[i] ^= PP
+            if GF256elt.__exptable[i] >= gf_order:
+                GF256elt.__exptable[i] ^= prime_poly
 
             GF256elt.__exptable[i] &= 0xff
             GF256elt.__logtable[GF256elt.__exptable[i]] = i
@@ -127,8 +127,8 @@ class GF256elt:
 
         see U{http://www.samiam.org/galois.html}."""
 
-        GF256elt.__logtable = [0 for i in range(256)]
-        GF256elt.__exptable = [0 for i in range(256)]
+        GF256elt.__logtable = [0] * 256
+        GF256elt.__exptable = [0] * 256
 
         # First exponential is 0x03 to the 0th power
         exp = 1
@@ -156,12 +156,12 @@ class GF256elt:
         print(GF256elt.__logtable)
 
 
-##
-## Generate log/exp tables based on a prime polynomial
-##
-## Possible values of PP are 285 299 301 333 351 355 357 361 369 391 397 425 451 463 487 501
-##
-##
+#
+# Generate log/exp tables based on a prime polynomial
+#
+# Possible values of PP are 285 299 301 333 351 355 357 361 369 391 397 425 451 463 487 501
+#
+#
 
 #
 # For Rijndael compatibility (0x11b prime polynomial and 0x03 as generator)

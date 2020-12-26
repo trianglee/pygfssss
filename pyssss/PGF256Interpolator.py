@@ -31,18 +31,18 @@ class PGF256Interpolator:
         #
 
         for i in range(0, len(points)):
-            if points[i][0] in map(lambda x: x[0], points[i + 1:]):
+            if points[i][0] in map(lambda t: t[0], points[i + 1:]):
                 raise Exception("Duplicate point exception")
 
         #
         # Special case for k=2
         #
 
-        if (2 == len(points)):
+        if len(points) == 2:
             x = PGF256((GF256elt(0), GF256elt(1)))
-            P = PGF256([points[1][1]]) * (x - points[0][0]) * (GF256elt(1) / (points[1][0] - points[0][0]))
-            P = P + PGF256([points[0][1]]) * (x - points[1][0]) * (GF256elt(1) / (points[0][0] - points[1][0]))
-            return P
+            p = PGF256([points[1][1]]) * (x - points[0][0]) * (GF256elt(1) / (points[1][0] - points[0][0]))
+            p = p + PGF256([points[0][1]]) * (x - points[1][0]) * (GF256elt(1) / (points[0][0] - points[1][0]))
+            return p
 
         #
         # Build the interpolating polynomial
@@ -60,7 +60,9 @@ class PGF256Interpolator:
 
         return result
 
-    def __Lj(self, points, j):
+    # noinspection PyPep8Naming
+    @staticmethod
+    def __Lj(points, j):
         result = GF256elt(1)
         x = PGF256((GF256elt(0), GF256elt(1)))
         for i in range(0, len(points)):

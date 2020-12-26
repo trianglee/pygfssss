@@ -26,6 +26,7 @@ from pyssss.PGF256Interpolator import PGF256Interpolator
 def pick_random_polynomial(degree, value):
     """Pick a random PGF256 polynomial P such that P(0) = value"""
 
+    # noinspection PyListCreation
     coeffs = []
 
     # Set f(0)
@@ -41,7 +42,7 @@ def pick_random_polynomial(degree, value):
 
 def pick_random_x_values(n):
     # Allocate array to track duplicates
-    picked = [False for i in range(0, 256)]
+    picked = [False] * 256
 
     x_values = []
 
@@ -63,16 +64,16 @@ def pick_random_x_values(n):
 
 def encode_byte(byte, n, k, x_values):
     # Pick a random polynomial
-    P = pick_random_polynomial(k - 1, GF256elt(byte))
+    poly = pick_random_polynomial(k - 1, GF256elt(byte))
 
     # Generate the keys
     keys = []
 
     for i in range(0, n):
-        X = GF256elt(x_values[i])
-        Y = P.f(X)
+        x = GF256elt(x_values[i])
+        y = poly.f(x)
 
-        keys.append(bytes([int(Y)]))
+        keys.append(bytes([int(y)]))
 
     return keys
 
@@ -102,26 +103,27 @@ def decode(keys, output):
     zero = GF256elt(0)
 
     # Read X values
-    X = []
+    x = []
     for i in range(0, len(keys)):
         data = keys[i].read(1)
         if len(data) == 0:
             raise Exception(f'Unexpected EOF while reading X of key {i}')
-        X.append(data[0])
+        x.append(data[0])
 
     end_of_key = False
     while not end_of_key:
         points = []
+        i = 0
         for i in range(0, len(keys)):
             # Extract X/Y
             data = keys[i].read(1)
             if len(data) == 0:
                 end_of_key = True
                 break
-            Y = data[0]
+            y = data[0]
 
             # Push point
-            points.append((GF256elt(X[i]), GF256elt(Y)))
+            points.append((GF256elt(x[i]), GF256elt(y)))
 
         if end_of_key:
             if i != 0:
@@ -136,14 +138,14 @@ def decode(keys, output):
 def main():
     from io import BytesIO
 
-    input = BytesIO(b"Too many secrets, Marty!")
+    secret = BytesIO(b"Too many secrets, Marty!")
     outputs = []
     n = 5
     k = 3
     for i in range(n):
         outputs.append(BytesIO())
 
-    encode(input, outputs, k)
+    encode(secret, outputs, k)
 
     for i in range(n):
         print(outputs[i].getvalue().hex())
