@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #
+#  Copyright 2020 Nimrod Zimerman
 #  Copyright 2010 Mathias Herberts
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
