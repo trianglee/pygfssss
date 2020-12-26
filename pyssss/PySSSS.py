@@ -50,7 +50,6 @@ def encodeByte(byte,n,k,picks):
     X = GF256elt(picks[i])
     Y = P.f(X)
 
-    keys[i] += bytes([int(X)])
     keys[i] += bytes([int(Y)])
 
   return keys
@@ -79,6 +78,8 @@ def encode(stream, outputs, k):
 
     picks.append(pick)
 
+    outputs[i].write(bytes([pick]))
+
   # Loop through the chars
   while True:
     data = stream.read(1)
@@ -97,33 +98,35 @@ def decode(keys,output):
   interpolator = PGF256Interpolator()
   zero = GF256elt(0)
 
-  # End Of Key
-  end_of_key = False
+  # Read X values
+  X = []
+  for i in range(0, len(keys)):
+    data = keys[i].read(1)
+    if len(data) == 0:
+      raise Exception(f'Unexpected EOF while reading X of key {i}')
+    X.append(data[0])
 
+  end_of_key = False
   while not end_of_key:
     points = []
     for i in range(0,len(keys)):
-      b = keys[i].read(1)
-      if 0 == len(b):
+      # Extract X/Y
+      data = keys[i].read(1)
+      if len(data) == 0:
         end_of_key = True
         break
-
-      X = ord(b)
-
-      # Extract X/Y
-      Y = ord(keys[i].read(1))
+      Y = data[0]
 
       # Push point
-      points.append((GF256elt(X),GF256elt(Y)))
+      points.append((GF256elt(X[i]),GF256elt(Y)))
 
     if end_of_key:
-      if 0 != i:
-        raise Exception('Unexpected EOF while reading key %d' % i)
+      if i != 0:
+        raise Exception(f'Unexpected EOF while reading key {i}')
       break
 
     # Decode next byte
     byte = interpolator.interpolate(points).f(zero)
-
     output.write(bytes([int(byte)]))
 
 
