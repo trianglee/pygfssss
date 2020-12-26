@@ -43,7 +43,7 @@ def pick_random_x_values(n):
     # Allocate array to track duplicates
     picked = [False for i in range(0, 256)]
 
-    picks = []
+    x_values = []
 
     for i in range(0, n):
 
@@ -56,9 +56,9 @@ def pick_random_x_values(n):
         # Keep track of the value we just picked
         picked[pick] = True
 
-        picks.append(pick)
+        x_values.append(pick)
 
-    return picks
+    return x_values
 
 
 def encode_byte(byte, n, k, x_values):
