@@ -39,7 +39,29 @@ def pickRandomPolynomial(degree, value):
   return PGF256(coeffs)
 
 
-def encodeByte(byte,n,k,picks):
+def pick_random_x_values(n):
+  # Allocate array to track duplicates
+  picked = [False for i in range(0,256)]
+
+  picks = []
+
+  for i in range(0,n):
+
+    # Pick a not yet picked X value in [1,255],
+    while True:
+      pick = random.randint(1, 255)
+      if not picked[pick]:
+        break
+
+    # Keep track of the value we just picked
+    picked[pick] = True
+
+    picks.append(pick)
+
+  return picks
+
+
+def encodeByte(byte, n, k, x_values):
   # Pick a random polynomial
   P = pickRandomPolynomial(k-1, GF256elt(byte))
 
@@ -47,7 +69,7 @@ def encodeByte(byte,n,k,picks):
   keys = [bytearray() for i in range(0,n)]
 
   for i in range(0,n):
-    X = GF256elt(picks[i])
+    X = GF256elt(x_values[i])
     Y = P.f(X)
 
     keys[i] += bytes([int(Y)])
@@ -59,26 +81,9 @@ def encode(stream, outputs, k):
 
   n = len(outputs)
 
-  # Allocate array to track duplicates
-  picked = [False for i in range(0,256)]
-
-  picks = []
-
+  x_values = pick_random_x_values(n)
   for i in range(0,n):
-
-    # Pick a not yet picked X value in [1,255],
-
-    while True:
-      pick = random.randint(1, 255)
-      if not picked[pick]:
-        break
-
-    # Keep track of the value we just picked
-    picked[pick] = True
-
-    picks.append(pick)
-
-    outputs[i].write(bytes([pick]))
+    outputs[i].write(bytes([x_values[i]]))
 
   # Loop through the chars
   while True:
@@ -87,7 +92,7 @@ def encode(stream, outputs, k):
       break
     byte = data[0]
 
-    keys = encodeByte(byte,n,k,picks)
+    keys = encodeByte(byte,n,k,x_values)
 
     for i in range(0,n):
       outputs[i].write(keys[i])
