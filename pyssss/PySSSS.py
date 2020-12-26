@@ -66,13 +66,13 @@ def encode_byte(byte, n, k, x_values):
     P = pick_random_polynomial(k - 1, GF256elt(byte))
 
     # Generate the keys
-    keys = [bytearray() for i in range(0, n)]
+    keys = []
 
     for i in range(0, n):
         X = GF256elt(x_values[i])
         Y = P.f(X)
 
-        keys[i] += bytes([int(Y)])
+        keys.append(bytes([int(Y)]))
 
     return keys
 
