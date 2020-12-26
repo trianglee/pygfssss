@@ -16,8 +16,7 @@
 #  limitations under the License.
 #
 # -*- coding: utf-8 -*-
-
-import random
+import secrets
 
 from pyssss.GF256elt import GF256elt
 from pyssss.PGF256 import PGF256
@@ -34,9 +33,8 @@ def pick_random_polynomial(degree, value):
     coeffs.append(value)
 
     # Pick coefficients for x^n with n <= degree
-
     for c in range(1, degree + 1):
-        coeffs.append(GF256elt(random.randint(0, 255)))
+        coeffs.append(GF256elt(secrets.SystemRandom().randint(0, 255)))
 
     return PGF256(coeffs)
 
@@ -51,7 +49,7 @@ def pick_random_x_values(n):
 
         # Pick a not yet picked X value in [1,255],
         while True:
-            pick = random.randint(1, 255)
+            pick = secrets.SystemRandom().randint(1, 255)
             if not picked[pick]:
                 break
 
