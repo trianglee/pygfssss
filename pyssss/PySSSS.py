@@ -40,25 +40,8 @@ def pick_random_polynomial(degree, value):
 
 
 def pick_random_x_values(n):
-    # Allocate array to track duplicates
-    picked = [False] * 256
-
-    x_values = []
-
-    for i in range(0, n):
-
-        # Pick a not yet picked X value in [1,255],
-        while True:
-            pick = secrets.SystemRandom().randint(1, 255)
-            if not picked[pick]:
-                break
-
-        # Keep track of the value we just picked
-        picked[pick] = True
-
-        x_values.append(pick)
-
-    return x_values
+    # X values must be within the range [1,255], and must not have duplicates.
+    return secrets.SystemRandom().sample(range(1, 255+1), n)
 
 
 def encode_byte(byte, n, k, x_values):
@@ -80,6 +63,7 @@ def encode_byte(byte, n, k, x_values):
 def encode(stream, outputs, k):
     n = len(outputs)
 
+    # Pick and emit random X values
     x_values = pick_random_x_values(n)
     for i in range(0, n):
         outputs[i].write(bytes([x_values[i]]))
@@ -87,7 +71,7 @@ def encode(stream, outputs, k):
     # Loop through the chars
     while True:
         data = stream.read(1)
-        if 0 == len(data):
+        if len(data) == 0:
             break
         byte = data[0]
 
