@@ -24,7 +24,9 @@ from pyssss.PGF256Interpolator import PGF256Interpolator
 
 
 def pick_random_polynomial(degree, value):
-    """Pick a random PGF256 polynomial P such that P(0) = value"""
+    """
+    Pick a random PGF256 polynomial P such that P(0) = value
+    """
 
     # noinspection PyListCreation
     coeffs = []
@@ -44,105 +46,108 @@ def pick_random_x_values(n):
     return secrets.SystemRandom().sample(range(1, 255+1), n)
 
 
-def encode_byte(byte, n, k, x_values):
+def split_byte(byte, shares_count, shares_threshold, x_values):
     # Pick a random polynomial
-    poly = pick_random_polynomial(k - 1, GF256elt(byte))
+    poly = pick_random_polynomial(shares_threshold - 1, GF256elt(byte))
 
-    # Generate the keys
-    keys = []
+    # Generate the shares
+    shares = []
 
-    for i in range(0, n):
+    for i in range(0, shares_count):
         x = GF256elt(x_values[i])
         y = poly.f(x)
 
-        keys.append(bytes([int(y)]))
+        shares.append(bytes([int(y)]))
 
-    return keys
+    return shares
 
 
-def encode(stream, outputs, k):
-    n = len(outputs)
+def split(plaintext_stream, share_streams, shares_count, shares_threshold):
+    """
+    Split bytes from 'plaintext_stream' into 'shares_count' share streams,
+    with a combine threshold of "shares_threshold".
+    """
+    if len(share_streams) != shares_count:
+        raise Exception(f'Amount of streams {len(share_streams)} must be identical to shares count {shares_count}')
 
     # Pick and emit random X values
-    x_values = pick_random_x_values(n)
-    for i in range(0, n):
-        outputs[i].write(bytes([x_values[i]]))
+    x_values = pick_random_x_values(shares_count)
+    for i in range(0, shares_count):
+        share_streams[i].write(bytes([x_values[i]]))
 
-    # Loop through the chars
+    # Loop through the stream bytes
     while True:
-        data = stream.read(1)
+        data = plaintext_stream.read(1)
         if len(data) == 0:
             break
         byte = data[0]
 
-        keys = encode_byte(byte, n, k, x_values)
+        shares = split_byte(byte, shares_count, shares_threshold, x_values)
 
-        for i in range(0, n):
-            outputs[i].write(keys[i])
+        for i in range(0, shares_count):
+            share_streams[i].write(shares[i])
 
 
-def decode(keys, output):
+def combine(share_streams, plaintext_stream):
     interpolator = PGF256Interpolator()
     zero = GF256elt(0)
 
     # Read X values
-    x = []
-    for i in range(0, len(keys)):
-        data = keys[i].read(1)
+    x_values = []
+    for i in range(0, len(share_streams)):
+        data = share_streams[i].read(1)
         if len(data) == 0:
-            raise Exception(f'Unexpected EOF while reading X of key {i}')
-        x.append(data[0])
+            raise Exception(f'Unexpected EOF while reading X of share {i}')
+        x_values.append(data[0])
 
-    end_of_key = False
-    while not end_of_key:
+    end_of_share = False
+    while not end_of_share:
         points = []
         i = 0
-        for i in range(0, len(keys)):
-            # Extract X/Y
-            data = keys[i].read(1)
+        for i in range(0, len(share_streams)):
+            # Extract Y
+            data = share_streams[i].read(1)
             if len(data) == 0:
-                end_of_key = True
+                end_of_share = True
                 break
             y = data[0]
 
             # Push point
-            points.append((GF256elt(x[i]), GF256elt(y)))
+            points.append((GF256elt(x_values[i]), GF256elt(y)))
 
-        if end_of_key:
+        if end_of_share:
             if i != 0:
-                raise Exception(f'Unexpected EOF while reading key {i}')
+                raise Exception(f'Unexpected EOF while reading share {i}')
             break
 
         # Decode next byte
-        byte = interpolator.interpolate(points).f(zero)
-        output.write(bytes([int(byte)]))
+        byte_value = interpolator.interpolate(points).f(zero)
+        plaintext_stream.write(bytes([int(byte_value)]))
 
 
 def main():
     from io import BytesIO
 
-    secret = BytesIO(b"Too many secrets, Marty!")
-    outputs = []
-    n = 5
-    k = 3
-    for i in range(n):
-        outputs.append(BytesIO())
+    plaintext = BytesIO(b"Too many secrets, Marty!")
+    shares_count = 5
+    shares_threshold = 3
+    shares = []
+    for _ in range(shares_count):
+        shares.append(BytesIO())
 
-    encode(secret, outputs, k)
+    split(plaintext, shares, shares_count, shares_threshold)
 
-    for i in range(n):
-        print(outputs[i].getvalue().hex())
+    for share in shares:
+        print(share.getvalue().hex())
 
-    inputs = []
-    for i in range(k):
-        inputs.append(outputs[i + 1])
+    # Pick a subset of the shares at random
+    shares_subset = secrets.SystemRandom().sample(shares, shares_threshold)
+    for share in shares_subset:
+        share.seek(0)
 
-    for i in range(k):
-        inputs[i].seek(0)
-
-    output = BytesIO()
-    decode(inputs, output)
-    print(output.getvalue())
+    output_plaintext = BytesIO()
+    combine(shares_subset, output_plaintext)
+    print(output_plaintext.getvalue())
 
 
 if __name__ == "__main__":
