@@ -62,18 +62,20 @@ def split_byte(byte, shares_count, shares_threshold, x_values):
     return shares
 
 
-def split(plaintext_stream, share_streams, shares_count, shares_threshold):
+def split(plaintext_stream, share_streams, shares_count, shares_threshold, x_values=None):
     """
     Split bytes from 'plaintext_stream' into 'shares_count' share streams,
     with a combine threshold of "shares_threshold".
+    If 'x_values' is provided from the outside, they aren't written to the shares.
     """
     if len(share_streams) != shares_count:
         raise Exception(f'Amount of streams {len(share_streams)} must be identical to shares count {shares_count}')
 
-    # Pick and emit random X values
-    x_values = pick_random_x_values(shares_count)
-    for i in range(0, shares_count):
-        share_streams[i].write(bytes([x_values[i]]))
+    if x_values is None:
+        # Pick and emit random X values
+        x_values = pick_random_x_values(shares_count)
+        for i in range(0, shares_count):
+            share_streams[i].write(bytes([x_values[i]]))
 
     # Loop through the stream bytes
     while True:
@@ -88,17 +90,22 @@ def split(plaintext_stream, share_streams, shares_count, shares_threshold):
             share_streams[i].write(shares[i])
 
 
-def combine(share_streams, plaintext_stream):
+def combine(share_streams, plaintext_stream, x_values=None):
+    """
+    Combine shares from 'share_streams' into 'plaintext_stream'.
+    If 'x_values' is provided from the outside, they aren't read from the shares.
+    """
     interpolator = PGF256Interpolator()
     zero = GF256elt(0)
 
-    # Read X values
-    x_values = []
-    for i in range(0, len(share_streams)):
-        data = share_streams[i].read(1)
-        if len(data) == 0:
-            raise Exception(f'Unexpected EOF while reading X of share {i}')
-        x_values.append(data[0])
+    if x_values is None:
+        # Read X values
+        x_values = []
+        for i in range(0, len(share_streams)):
+            data = share_streams[i].read(1)
+            if len(data) == 0:
+                raise Exception(f'Unexpected EOF while reading X of share {i}')
+            x_values.append(data[0])
 
     end_of_share = False
     while not end_of_share:

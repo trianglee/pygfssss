@@ -17,9 +17,9 @@
 
 import itertools
 import unittest
+from io import BytesIO
 
 from pyssss import PySSSS
-from io import BytesIO
 
 
 class TestPySSSS(unittest.TestCase):
@@ -169,6 +169,30 @@ class TestPySSSS(unittest.TestCase):
                 PySSSS.combine(shares_subset, output_plaintext)
 
                 self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+
+    def test_external_x_values(self):
+
+        plaintext = BytesIO(b"The only secrets are the secrets that keep themselves.")
+        shares_count = 5
+        shares_threshold = 3
+        shares = []
+        for _ in range(shares_count):
+            shares.append(BytesIO())
+
+        x_values = [10, 20, 30, 40, 50]
+
+        PySSSS.split(plaintext, shares, shares_count, shares_threshold, x_values)
+
+        # Pick a subset of the shares
+        shares_subset = shares[1:shares_threshold+1]
+        x_values_subset = x_values[1:shares_threshold+1]
+        for share in shares_subset:
+            share.seek(0)
+
+        output_plaintext = BytesIO()
+        PySSSS.combine(shares_subset, output_plaintext, x_values_subset)
+
+        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
 
 
 if __name__ == '__main__':
