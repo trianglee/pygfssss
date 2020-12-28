@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #  Copyright 2020 Nimrod Zimerman
 #  Copyright 2010 Mathias Herberts
