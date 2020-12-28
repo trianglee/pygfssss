@@ -26,47 +26,47 @@ class TestPySSSS(unittest.TestCase):
 
     def test_simple_split_combine(self):
 
-        plaintext = BytesIO(b"Too many secrets, Marty!")
+        secret = BytesIO(b"Too many secrets, Marty!")
         shares_count = 7
         shares_threshold = 5
         shares = []
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold)
+        PySSSS.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
         for share in shares_subset:
             share.seek(0)
 
-        output_plaintext = BytesIO()
-        PySSSS.combine(shares_subset, output_plaintext)
+        output_secret = BytesIO()
+        PySSSS.combine(shares_subset, output_secret)
 
-        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+        self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
     def test_single_share(self):
 
-        plaintext = BytesIO(b"The biggest guru-mantra is: never share your secrets with anybody. It will destroy you.")
+        secret = BytesIO(b"The biggest guru-mantra is: never share your secrets with anybody. It will destroy you.")
         shares_count = 1
         shares_threshold = 1
         shares = []
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold)
+        PySSSS.split(secret, shares, shares_count, shares_threshold)
 
         for share in shares:
             share.seek(0)
 
-        output_plaintext = BytesIO()
-        PySSSS.combine(shares, output_plaintext)
+        output_secret = BytesIO()
+        PySSSS.combine(shares, output_secret)
 
-        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+        self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
     def test_single_threshold(self):
 
-        plaintext = BytesIO(
+        secret = BytesIO(
             b"If you reveal your secrets to the wind, you should not blame the wind for revealing them to the trees.")
         shares_count = 2
         shares_threshold = 1
@@ -74,105 +74,105 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold)
+        PySSSS.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
         for share in shares_subset:
             share.seek(0)
 
-        output_plaintext = BytesIO()
-        PySSSS.combine(shares_subset, output_plaintext)
+        output_secret = BytesIO()
+        PySSSS.combine(shares_subset, output_secret)
 
-        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+        self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
     def test_threshold_shares(self):
 
-        plaintext = BytesIO(b"I don't have any secrets I need kept any more.")
+        secret = BytesIO(b"I don't have any secrets I need kept any more.")
         shares_count = 10
         shares_threshold = 10
         shares = []
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold)
+        PySSSS.split(secret, shares, shares_count, shares_threshold)
 
         for share in shares:
             share.seek(0)
 
-        output_plaintext = BytesIO()
-        PySSSS.combine(shares, output_plaintext)
+        output_secret = BytesIO()
+        PySSSS.combine(shares, output_secret)
 
-        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+        self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
     def test_binary(self):
 
-        plaintext = BytesIO(b"\x00\x01\xff\xfa\xba\xba\xfa\xfb")
+        secret = BytesIO(b"\x00\x01\xff\xfa\xba\xba\xfa\xfb")
         shares_count = 5
         shares_threshold = 3
         shares = []
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold)
+        PySSSS.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
         for share in shares_subset:
             share.seek(0)
 
-        output_plaintext = BytesIO()
-        PySSSS.combine(shares_subset, output_plaintext)
+        output_secret = BytesIO()
+        PySSSS.combine(shares_subset, output_secret)
 
-        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+        self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
-    def test_empty_plaintext(self):
+    def test_empty_secret(self):
 
-        plaintext = BytesIO(b"")
+        secret = BytesIO(b"")
         shares_count = 5
         shares_threshold = 3
         shares = []
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold)
+        PySSSS.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
         for share in shares_subset:
             share.seek(0)
 
-        output_plaintext = BytesIO()
-        PySSSS.combine(shares_subset, output_plaintext)
+        output_secret = BytesIO()
+        PySSSS.combine(shares_subset, output_secret)
 
-        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+        self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
     def test_all_permutations(self):
 
-        plaintext = BytesIO(b"Do not tell secrets to those whose faith and silence you have not already tested.")
+        secret = BytesIO(b"Do not tell secrets to those whose faith and silence you have not already tested.")
         shares_count = 4
         shares_threshold = 2
         shares = []
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold)
+        PySSSS.split(secret, shares, shares_count, shares_threshold)
 
         # Pick all subsets shares of size larger than or equal to shares_threshold,
-        # and verify the plaintext is the same for all
+        # and verify the secret is the same for all
         for shares_subset_count in range(shares_threshold, shares_count + 1):
             for shares_subset in itertools.permutations(shares, shares_subset_count):
                 for share in shares_subset:
                     share.seek(0)
 
-                output_plaintext = BytesIO()
-                PySSSS.combine(shares_subset, output_plaintext)
+                output_secret = BytesIO()
+                PySSSS.combine(shares_subset, output_secret)
 
-                self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+                self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
     def test_external_x_values(self):
 
-        plaintext = BytesIO(b"The only secrets are the secrets that keep themselves.")
+        secret = BytesIO(b"The only secrets are the secrets that keep themselves.")
         shares_count = 5
         shares_threshold = 3
         shares = []
@@ -181,7 +181,7 @@ class TestPySSSS(unittest.TestCase):
 
         x_values = [10, 20, 30, 40, 50]
 
-        PySSSS.split(plaintext, shares, shares_count, shares_threshold, x_values)
+        PySSSS.split(secret, shares, shares_count, shares_threshold, x_values)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
@@ -189,10 +189,10 @@ class TestPySSSS(unittest.TestCase):
         for share in shares_subset:
             share.seek(0)
 
-        output_plaintext = BytesIO()
-        PySSSS.combine(shares_subset, output_plaintext, x_values_subset)
+        output_secret = BytesIO()
+        PySSSS.combine(shares_subset, output_secret, x_values_subset)
 
-        self.assertEqual(output_plaintext.getvalue(), plaintext.getvalue())
+        self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
 
 if __name__ == '__main__':

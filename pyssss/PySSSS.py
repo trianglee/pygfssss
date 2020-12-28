@@ -62,9 +62,9 @@ def split_byte(byte, shares_count, shares_threshold, x_values):
     return shares
 
 
-def split(plaintext_stream, share_streams, shares_count, shares_threshold, x_values=None):
+def split(secret_stream, share_streams, shares_count, shares_threshold, x_values=None):
     """
-    Split bytes from 'plaintext_stream' into 'shares_count' share streams,
+    Split bytes from 'secret_stream' into 'shares_count' share streams,
     with a combine threshold of "shares_threshold".
     If 'x_values' is provided from the outside, they aren't written to the shares.
     """
@@ -79,7 +79,7 @@ def split(plaintext_stream, share_streams, shares_count, shares_threshold, x_val
 
     # Loop through the stream bytes
     while True:
-        data = plaintext_stream.read(1)
+        data = secret_stream.read(1)
         if len(data) == 0:
             break
         byte = data[0]
@@ -90,9 +90,9 @@ def split(plaintext_stream, share_streams, shares_count, shares_threshold, x_val
             share_streams[i].write(shares[i])
 
 
-def combine(share_streams, plaintext_stream, x_values=None):
+def combine(share_streams, secret_stream, x_values=None):
     """
-    Combine shares from 'share_streams' into 'plaintext_stream'.
+    Combine shares from 'share_streams' into 'secret_stream'.
     If 'x_values' is provided from the outside, they aren't read from the shares.
     """
     interpolator = PGF256Interpolator()
@@ -129,20 +129,20 @@ def combine(share_streams, plaintext_stream, x_values=None):
 
         # Decode next byte
         byte_value = interpolator.interpolate(points).f(zero)
-        plaintext_stream.write(bytes([int(byte_value)]))
+        secret_stream.write(bytes([int(byte_value)]))
 
 
 def main():
     from io import BytesIO
 
-    plaintext = BytesIO(b"Too many secrets, Marty!")
+    secret = BytesIO(b"Too many secrets, Marty!")
     shares_count = 5
     shares_threshold = 3
     shares = []
     for _ in range(shares_count):
         shares.append(BytesIO())
 
-    split(plaintext, shares, shares_count, shares_threshold)
+    split(secret, shares, shares_count, shares_threshold)
 
     for share in shares:
         print(share.getvalue().hex())
@@ -152,9 +152,9 @@ def main():
     for share in shares_subset:
         share.seek(0)
 
-    output_plaintext = BytesIO()
-    combine(shares_subset, output_plaintext)
-    print(output_plaintext.getvalue())
+    output_secret = BytesIO()
+    combine(shares_subset, output_secret)
+    print(output_secret.getvalue())
 
 
 if __name__ == "__main__":

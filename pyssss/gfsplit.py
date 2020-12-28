@@ -53,18 +53,18 @@ def main():
 
     args = parser.parse_args()
 
-    plaintext_file_path = pathlib.Path(args.input_file.name)
-    plaintext_file_dir = plaintext_file_path.parents[0]
+    secret_file_path = pathlib.Path(args.input_file.name)
+    secret_file_dir = secret_file_path.parents[0]
 
     output_stem = args.output_stem
     if output_stem == "":
-        output_stem = plaintext_file_path.name
+        output_stem = secret_file_path.name
 
     x_values = PySSSS.pick_random_x_values(args.shares_count)
 
     shares = []
     for t in range(args.shares_count):
-        output_path = plaintext_file_dir / (output_stem + "." + str(x_values[t]).zfill(3))
+        output_path = secret_file_dir / (output_stem + "." + str(x_values[t]).zfill(3))
         shares.append(output_path.open("wb"))
 
     PySSSS.split(args.input_file, shares, args.shares_count, args.threshold, x_values)

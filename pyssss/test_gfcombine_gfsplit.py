@@ -26,7 +26,7 @@ import unittest
 
 class TestGfsplitGfcombine(unittest.TestCase):
 
-    def run_gfsplit_gfcombine(self, threshold, shares_count_to_create, share_indices_to_combine, plaintext_bytes_count):
+    def run_gfsplit_gfcombine(self, threshold, shares_count_to_create, share_indices_to_combine, secret_bytes_count):
         python_bin = sys.executable
 
         input_file_name = "input.txt"
@@ -39,9 +39,9 @@ class TestGfsplitGfcombine(unittest.TestCase):
         f = input_file_path.open("wb")
         # Generate deterministic random bytes content using deterministic seed.
         rnd = random.Random(str(threshold) + str(shares_count_to_create) + str(share_indices_to_combine) +
-                            str(plaintext_bytes_count))
-        plaintext_bytes = bytes([rnd.randint(0, 255) for _ in range(plaintext_bytes_count)])
-        f.write(plaintext_bytes)
+                            str(secret_bytes_count))
+        secret_bytes = bytes([rnd.randint(0, 255) for _ in range(secret_bytes_count)])
+        f.write(secret_bytes)
         f.close()
 
         subprocess.check_call(f"{python_bin} gfsplit.py -n {threshold} -m {shares_count_to_create} {input_file_path}",
@@ -58,11 +58,11 @@ class TestGfsplitGfcombine(unittest.TestCase):
         subprocess.check_call(f"{python_bin} gfcombine.py {shares_file_paths} -o {output_file_path}", shell=True)
 
         with open(output_file_path, "rb") as f:
-            plaintext_bytes_output = f.read()
+            secret_bytes_output = f.read()
 
         temp_dir.cleanup()
 
-        self.assertEqual(plaintext_bytes, plaintext_bytes_output)
+        self.assertEqual(secret_bytes, secret_bytes_output)
 
     def test_split_combine_simple(self):
         self.run_gfsplit_gfcombine(3, 5, [0, 1, 4], 20)
