@@ -15,7 +15,7 @@
 #  limitations under the License.
 #
 
-from pyssss.GF256elt import GF256elt
+from pygfssss.GF256elt import GF256elt
 
 
 class PGF256:

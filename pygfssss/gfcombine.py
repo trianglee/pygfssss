@@ -19,7 +19,7 @@ import argparse
 import pathlib
 import re
 
-from pyssss import PySSSS
+from pygfssss import core
 
 
 def main():
@@ -57,7 +57,7 @@ def main():
 
     output_file = open(output_file_path, "wb")
 
-    PySSSS.combine(shares, output_file, x_values)
+    core.combine(shares, output_file, x_values)
 
     output_file.close()
     for share in shares:

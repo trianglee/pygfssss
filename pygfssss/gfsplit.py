@@ -18,7 +18,7 @@
 import argparse
 import pathlib
 
-from pyssss import PySSSS
+from pygfssss import core
 
 
 def main():
@@ -60,14 +60,14 @@ def main():
     if output_stem == "":
         output_stem = secret_file_path.name
 
-    x_values = PySSSS.pick_random_x_values(args.shares_count)
+    x_values = core.pick_random_x_values(args.shares_count)
 
     shares = []
     for t in range(args.shares_count):
         output_path = secret_file_dir / (output_stem + "." + str(x_values[t]).zfill(3))
         shares.append(output_path.open("wb"))
 
-    PySSSS.split(args.input_file, shares, args.shares_count, args.threshold, x_values)
+    core.split(args.input_file, shares, args.shares_count, args.threshold, x_values)
 
     args.input_file.close()
     for share in shares:

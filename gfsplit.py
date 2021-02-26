@@ -15,8 +15,8 @@
 #  limitations under the License.
 #
 
-import pyssss.gfsplit
+import pygfssss.gfsplit
 
 
 if __name__ == '__main__':
-    pyssss.gfsplit.main()
+    pygfssss.gfsplit.main()

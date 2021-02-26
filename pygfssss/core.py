@@ -18,9 +18,9 @@
 
 import secrets
 
-from pyssss.GF256elt import GF256elt
-from pyssss.PGF256 import PGF256
-from pyssss.PGF256Interpolator import PGF256Interpolator
+from pygfssss.GF256elt import GF256elt
+from pygfssss.PGF256 import PGF256
+from pygfssss.PGF256Interpolator import PGF256Interpolator
 
 
 def pick_random_polynomial(degree, value):

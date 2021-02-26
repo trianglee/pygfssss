@@ -19,7 +19,7 @@ import itertools
 import unittest
 from io import BytesIO
 
-from pyssss import PySSSS
+from pygfssss import core
 
 
 class TestPySSSS(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold)
+        core.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
@@ -41,7 +41,7 @@ class TestPySSSS(unittest.TestCase):
             share.seek(0)
 
         output_secret = BytesIO()
-        PySSSS.combine(shares_subset, output_secret)
+        core.combine(shares_subset, output_secret)
 
         self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
@@ -54,13 +54,13 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold)
+        core.split(secret, shares, shares_count, shares_threshold)
 
         for share in shares:
             share.seek(0)
 
         output_secret = BytesIO()
-        PySSSS.combine(shares, output_secret)
+        core.combine(shares, output_secret)
 
         self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
@@ -74,7 +74,7 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold)
+        core.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
@@ -82,7 +82,7 @@ class TestPySSSS(unittest.TestCase):
             share.seek(0)
 
         output_secret = BytesIO()
-        PySSSS.combine(shares_subset, output_secret)
+        core.combine(shares_subset, output_secret)
 
         self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
@@ -95,13 +95,13 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold)
+        core.split(secret, shares, shares_count, shares_threshold)
 
         for share in shares:
             share.seek(0)
 
         output_secret = BytesIO()
-        PySSSS.combine(shares, output_secret)
+        core.combine(shares, output_secret)
 
         self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
@@ -114,7 +114,7 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold)
+        core.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
@@ -122,7 +122,7 @@ class TestPySSSS(unittest.TestCase):
             share.seek(0)
 
         output_secret = BytesIO()
-        PySSSS.combine(shares_subset, output_secret)
+        core.combine(shares_subset, output_secret)
 
         self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
@@ -135,7 +135,7 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold)
+        core.split(secret, shares, shares_count, shares_threshold)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
@@ -143,7 +143,7 @@ class TestPySSSS(unittest.TestCase):
             share.seek(0)
 
         output_secret = BytesIO()
-        PySSSS.combine(shares_subset, output_secret)
+        core.combine(shares_subset, output_secret)
 
         self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
@@ -156,7 +156,7 @@ class TestPySSSS(unittest.TestCase):
         for _ in range(shares_count):
             shares.append(BytesIO())
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold)
+        core.split(secret, shares, shares_count, shares_threshold)
 
         # Pick all subsets shares of size larger than or equal to shares_threshold,
         # and verify the secret is the same for all
@@ -166,7 +166,7 @@ class TestPySSSS(unittest.TestCase):
                     share.seek(0)
 
                 output_secret = BytesIO()
-                PySSSS.combine(shares_subset, output_secret)
+                core.combine(shares_subset, output_secret)
 
                 self.assertEqual(output_secret.getvalue(), secret.getvalue())
 
@@ -181,7 +181,7 @@ class TestPySSSS(unittest.TestCase):
 
         x_values = [10, 20, 30, 40, 50]
 
-        PySSSS.split(secret, shares, shares_count, shares_threshold, x_values)
+        core.split(secret, shares, shares_count, shares_threshold, x_values)
 
         # Pick a subset of the shares
         shares_subset = shares[1:shares_threshold+1]
@@ -190,7 +190,7 @@ class TestPySSSS(unittest.TestCase):
             share.seek(0)
 
         output_secret = BytesIO()
-        PySSSS.combine(shares_subset, output_secret, x_values_subset)
+        core.combine(shares_subset, output_secret, x_values_subset)
 
         self.assertEqual(output_secret.getvalue(), secret.getvalue())
 

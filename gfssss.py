@@ -15,8 +15,8 @@
 #  limitations under the License.
 #
 
-import pyssss.gfssss
+import pygfssss.gfssss
 
 
 if __name__ == '__main__':
-    pyssss.gfssss.main()
+    pygfssss.gfssss.main()

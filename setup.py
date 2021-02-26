@@ -4,16 +4,16 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup(
-    name='pyssss',
+    name='pygfssss',
     version='0.0.0',
     packages=find_packages(),
     python_requires='>=3.7',
     install_requires=requirements,
     entry_points={
         'console_scripts': [
-            'gfssss = pyssss.gfssss:main',
-            'gfsplit = pyssss.gfsplit:main',
-            'gfcombine = pyssss.gfcombine:main',
+            'gfssss = pygfssss.gfssss:main',
+            'gfsplit = pygfssss.gfsplit:main',
+            'gfcombine = pygfssss.gfcombine:main',
         ]
     },
 )

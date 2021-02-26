@@ -20,7 +20,7 @@ import binascii
 import sys
 from io import BytesIO
 
-from pyssss import PySSSS
+from pygfssss import core
 
 
 def split(args):
@@ -28,7 +28,7 @@ def split(args):
     for _ in range(args.shares_count):
         shares.append(BytesIO())
 
-    PySSSS.split(sys.stdin.buffer, shares, args.shares_count, args.threshold)
+    core.split(sys.stdin.buffer, shares, args.shares_count, args.threshold)
 
     for share in shares:
         print(share.getvalue().hex())
@@ -44,13 +44,13 @@ def combine(_):
         shares.append(BytesIO(share_bin))
 
     output_secret = BytesIO()
-    PySSSS.combine(shares, output_secret)
+    core.combine(shares, output_secret)
     sys.stdout.buffer.write(output_secret.getvalue())
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='gfssss - split and combine secrets using Shamir Secret Sharing Scheme ' +
+        description='pygfssss - split and combine secrets using Shamir Secret Sharing Scheme ' +
                     'over GF(256) with 0x11d prime polynomial')
 
     subparsers = parser.add_subparsers(title="commands",

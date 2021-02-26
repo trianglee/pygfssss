@@ -15,8 +15,8 @@
 #  limitations under the License.
 #
 
-import pyssss.gfcombine
+import pygfssss.gfcombine
 
 
 if __name__ == '__main__':
-    pyssss.gfcombine.main()
+    pygfssss.gfcombine.main()

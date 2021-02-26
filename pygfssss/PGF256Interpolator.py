@@ -15,8 +15,8 @@
 #  limitations under the License.
 #
 
-from pyssss.GF256elt import GF256elt
-from pyssss.PGF256 import PGF256
+from pygfssss.GF256elt import GF256elt
+from pygfssss.PGF256 import PGF256
 
 
 class PGF256Interpolator:
