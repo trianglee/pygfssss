@@ -8,7 +8,7 @@ with open('README.md') as f:
 
 setup(
     name='pygfssss',
-    version='0.0.0',
+    version='1.0.0',
     description="Python implementation of Shamir's Secret Sharing Scheme, using polynomials over GF(256)",
     long_description=long_description,
     long_description_content_type="text/markdown",
