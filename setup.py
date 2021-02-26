@@ -11,9 +11,9 @@ setup(
     install_requires=requirements,
     entry_points={
         'console_scripts': [
-            'gfssss = pygfssss.gfssss:main',
-            'gfsplit = pygfssss.gfsplit:main',
-            'gfcombine = pygfssss.gfcombine:main',
+            'pygfssss = pygfssss.gfssss:main',
+            'pygfsplit = pygfssss.gfsplit:main',
+            'pygfcombine = pygfssss.gfcombine:main',
         ]
     },
 )
