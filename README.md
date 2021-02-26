@@ -29,7 +29,7 @@ For example, Linux installation in a virtualenv directly from GitHub -
 
 ```
 python -m virtualenv venv
-venv/bin/python -m pip install https://github.com/trianglee/pygfssss
+venv/bin/python -m pip install git+https://github.com/trianglee/pygfssss
 ```
 
 `pygfssss` runs on Linux and Windows.
