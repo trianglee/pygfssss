@@ -25,11 +25,18 @@ the following features -
 
 `pygfssss` is provided as a standard Python package. It can be installed with standard Python tools.
 
-For example, Linux installation in a virtualenv directly from GitHub -
+For example, Linux installation in a virtualenv from PyPI -
 
 ```
 python -m virtualenv venv
-venv/bin/python -m pip install git+https://github.com/trianglee/pygfssss
+venv/bin/python -m pip install --upgrade pygfssss
+```
+
+Or, directly from GitHub -
+
+```
+python -m virtualenv venv
+venv/bin/python -m pip install --upgrade git+https://github.com/trianglee/pygfssss
 ```
 
 `pygfssss` runs on Linux and Windows.
